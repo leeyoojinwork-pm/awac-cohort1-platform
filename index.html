@@ -126,7 +126,7 @@
 
     .week-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 18px;
     }
 
@@ -238,8 +238,10 @@
       background: var(--purple);
     }
 
-    .week-card:nth-child(2) .card-footer::before { background: var(--orange); }
+    .week-card:nth-child(1) .card-footer::before { background: var(--orange); }
+    .week-card:nth-child(2) .card-footer::before { background: var(--purple); }
     .week-card:nth-child(3) .card-footer::before { background: var(--lime); }
+    .week-card:nth-child(4) .card-footer::before { background: var(--orange); }
 
     footer {
       display: flex;
@@ -252,13 +254,13 @@
       border-top: 1px solid var(--line);
     }
 
-    @media (max-width: 960px) {
+    @media (max-width: 1180px) {
       .intro {
         grid-template-columns: 1fr;
         gap: 24px;
       }
 
-      .week-grid { grid-template-columns: 1fr; }
+      .week-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .week-card { min-height: 310px; }
       .card-title { margin-top: 38px; }
     }
@@ -274,6 +276,7 @@
       .intro { padding: 46px 0 34px; }
       h1 { font-size: clamp(48px, 16vw, 72px); }
       .intro-copy { font-size: 16px; }
+      .week-grid { grid-template-columns: 1fr; }
       .week-card { padding: 24px; }
       footer { flex-direction: column; }
     }
@@ -294,10 +297,19 @@
         <p class="eyebrow">COURSE CONTROL CENTER</p>
         <h1 id="page-title">강의 자료를<br><span>한곳에서.</span></h1>
       </div>
-      <p class="intro-copy">2주차부터 4주차까지 이어지는 Agent 강의덱입니다. 원하는 주차를 선택하면 해당 강의가 바로 열립니다.</p>
+      <p class="intro-copy">1주차부터 4주차까지 이어지는 Agent 강의덱입니다. 원하는 주차를 선택하면 해당 강의가 바로 열립니다.</p>
     </section>
 
     <section class="week-grid" aria-label="주차별 강의덱">
+      <a class="week-card" href="https://leeyoojinwork-pm.github.io/awac-week1-agent/" target="_blank" rel="noopener">
+        <div class="card-inner">
+          <div class="week-number"><span>WEEK 01</span><span class="arrow" aria-hidden="true">↗</span></div>
+          <h2 class="card-title">AWAC<br>OPENING</h2>
+          <p class="card-subtitle">AWAC 1기 1주차 오리엔테이션과 강의 자료</p>
+          <div class="card-footer">강의덱 열기</div>
+        </div>
+      </a>
+
       <a class="week-card" href="https://leeyoojinwork-pm.github.io/yujin-flow/#/opening" target="_blank" rel="noopener">
         <div class="card-inner">
           <div class="week-number"><span>WEEK 02</span><span class="arrow" aria-hidden="true">↗</span></div>
