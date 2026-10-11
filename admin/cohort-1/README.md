@@ -6,16 +6,18 @@
 - 채팅 범위: 카카오톡 대화 목록 338개 항목
 - 미디어: 총 30개 중 원본 19개 복구, 만료 11개
 - 공개 원칙: 질문·답변은 익명화, 이메일·초대 링크·개인 사진은 제외
-- 분석 목적: 2기 운영 개선, 교육 상품화, AI/AX 도서 판매 전략 수립
+- 분석 목적: 2기 운영 개선과 강의자료 고도화
 
 ## 문서
 
 1. [`chat-archive/qa-and-interests.md`](chat-archive/qa-and-interests.md) — 반복 질문과 답변, 관심 신호
 2. [`chat-archive/research-synthesis.md`](chat-archive/research-synthesis.md) — 테마, 인사이트, 운영 우선순위
-3. [`book-sales/channel-strategy.md`](book-sales/channel-strategy.md) — AWAC 근거를 반영한 90일·1,000권 채널 전략
-4. [`book-sales/90-day-execution-plan.md`](book-sales/90-day-execution-plan.md) — 주차별 실행·측정 계획
-5. [`assets/manifest.md`](assets/manifest.md) — 미디어 보존 현황과 공개 범위
-6. [`data/evidence-matrix.csv`](data/evidence-matrix.csv) — 익명화한 증거 매트릭스
+3. [`course-development/README.md`](course-development/README.md) — AWAC V2 강의자료 인덱스
+4. [`course-development/curriculum-v2.md`](course-development/curriculum-v2.md) — 질문 근거 기반 4주 커리큘럼
+5. [`course-development/student-workbook.md`](course-development/student-workbook.md) — 참여자 실습 워크북
+6. [`course-development/awac-v2-deck.html`](course-development/awac-v2-deck.html) — 발표·인쇄 가능한 V2 강의덱
+7. [`assets/manifest.md`](assets/manifest.md) — 미디어 보존 현황과 공개 범위
+8. [`data/evidence-matrix.csv`](data/evidence-matrix.csv) — 익명화한 증거 매트릭스
 
 ## 사용 원칙
 

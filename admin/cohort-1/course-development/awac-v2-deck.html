@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15131a">
+  <meta name="description" content="AWAC 1기 질문과 인사이트를 반영한 4주 강의덱">
+  <title>AWAC V2 · 판단에서 운영까지</title>
+  <style>
+    :root {
+      --ink: #17151d;
+      --paper: #f4f1e9;
+      --white: #fffdf8;
+      --line: #cbc5b8;
+      --muted: #6f6975;
+      --purple: #7450f5;
+      --lime: #d8ff43;
+      --orange: #ff6c45;
+      --blue: #4f8cff;
+      --rail: 250px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #ddd8cd;
+      font-family: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    }
+    button, a { font: inherit; }
+    button { cursor: pointer; }
+    .skip { position: fixed; left: 12px; top: -60px; z-index: 20; padding: 10px 14px; background: var(--lime); color: var(--ink); }
+    .skip:focus { top: 12px; }
+    .topbar {
+      position: fixed;
+      z-index: 10;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      color: #f8f5ef;
+      background: rgba(23, 21, 29, .96);
+      border-bottom: 1px solid rgba(255,255,255,.14);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; letter-spacing: -.03em; }
+    .brand b { display: grid; place-items: center; width: 34px; height: 34px; color: var(--ink); background: var(--lime); }
+    .tools { display: flex; align-items: center; gap: 12px; }
+    .counter { color: #bcb5c8; font-size: 13px; }
+    .tools button { padding: 8px 12px; color: #fff; background: transparent; border: 1px solid rgba(255,255,255,.25); }
+    .tools button:hover, .tools button:focus-visible { color: var(--ink); background: var(--lime); outline: 0; }
+    .progress { position: fixed; z-index: 12; top: 56px; left: 0; width: 0; height: 3px; background: var(--lime); }
+    .toc {
+      position: fixed;
+      z-index: 6;
+      top: 59px;
+      bottom: 0;
+      left: 0;
+      width: var(--rail);
+      overflow: auto;
+      padding: 18px 14px 40px;
+      color: #d9d3df;
+      background: var(--ink);
+      border-right: 1px solid rgba(255,255,255,.12);
+    }
+    .toc h2 { margin: 0 8px 14px; color: #81798b; font-size: 11px; letter-spacing: .16em; }
+    .toc button {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 8px;
+      width: 100%;
+      padding: 8px;
+      color: inherit;
+      text-align: left;
+      background: transparent;
+      border: 0;
+      border-left: 2px solid transparent;
+    }
+    .toc button span:first-child { color: #736c7d; font-variant-numeric: tabular-nums; }
+    .toc button:hover, .toc button:focus-visible, .toc button.active { color: #fff; background: rgba(255,255,255,.07); border-left-color: var(--lime); outline: 0; }
+    .deck { margin-left: var(--rail); padding: 82px 24px 32px; }
+    .slide {
+      position: relative;
+      scroll-margin-top: 82px;
+      width: min(1180px, calc(100vw - var(--rail) - 48px));
+      min-height: min(700px, calc(100vh - 116px));
+      margin: 0 auto 28px;
+      padding: clamp(42px, 5vw, 76px);
+      overflow: hidden;
+      background: var(--paper);
+      border: 1px solid #c9c3b8;
+      box-shadow: 0 18px 45px rgba(31,27,23,.12);
+    }
+    .slide::after { content: attr(data-number); position: absolute; right: 34px; bottom: 26px; color: #aaa397; font-size: 12px; font-weight: 800; }
+    .slide.dark { color: #fff; background: var(--ink); border-color: #292530; }
+    .slide.purple { color: #fff; background: var(--purple); border-color: var(--purple); }
+    .slide.lime { background: var(--lime); border-color: #b8dc32; }
+    .slide.orange { color: #fff; background: var(--orange); border-color: var(--orange); }
+    .slide.dark::after, .slide.purple::after, .slide.orange::after { color: rgba(255,255,255,.45); }
+    .eyebrow { margin: 0 0 24px; color: var(--purple); font-size: 12px; font-weight: 950; letter-spacing: .18em; }
+    .dark .eyebrow, .purple .eyebrow, .orange .eyebrow { color: var(--lime); }
+    h1, h2, h3, p { word-break: keep-all; }
+    h1 { margin: 0; max-width: 980px; font-size: clamp(48px, 6.1vw, 88px); line-height: .98; letter-spacing: -.07em; }
+    h1 span { color: var(--purple); }
+    .dark h1 span, .purple h1 span, .orange h1 span { color: var(--lime); }
+    .lead { max-width: 920px; margin: 28px 0 0; color: var(--muted); font-size: clamp(19px, 2vw, 28px); line-height: 1.55; }
+    .dark .lead, .purple .lead, .orange .lead { color: rgba(255,255,255,.76); }
+    .rule { width: 72px; height: 7px; margin: 34px 0; background: var(--purple); }
+    .dark .rule, .purple .rule, .orange .rule { background: var(--lime); }
+    .big-number { margin: 14px 0 0; font-size: clamp(92px, 15vw, 190px); font-weight: 950; line-height: .82; letter-spacing: -.09em; }
+    .big-number small { font-size: .22em; letter-spacing: -.02em; }
+    .grid { display: grid; gap: 16px; margin-top: 36px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .card { padding: 24px; background: rgba(255,255,255,.58); border: 1px solid var(--line); }
+    .dark .card, .purple .card, .orange .card { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.2); }
+    .card small { color: var(--purple); font-size: 11px; font-weight: 900; letter-spacing: .12em; }
+    .dark .card small, .purple .card small, .orange .card small { color: var(--lime); }
+    .card h2 { margin: 12px 0 8px; font-size: clamp(24px, 2.6vw, 38px); line-height: 1.08; letter-spacing: -.045em; }
+    .card p { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.55; }
+    .dark .card p, .purple .card p, .orange .card p { color: rgba(255,255,255,.7); }
+    .quote { max-width: 920px; margin: 46px 0 0; font-size: clamp(31px, 4.3vw, 62px); font-weight: 850; line-height: 1.16; letter-spacing: -.055em; }
+    .quote::before { content: "“"; color: var(--purple); }
+    .quote::after { content: "”"; color: var(--purple); }
+    .dark .quote::before, .dark .quote::after, .purple .quote::before, .purple .quote::after { color: var(--lime); }
+    .note { position: absolute; right: 74px; bottom: 68px; max-width: 420px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .dark .note, .purple .note, .orange .note { color: rgba(255,255,255,.58); }
+    .decision { display: grid; grid-template-columns: 1fr 100px 1fr; align-items: stretch; gap: 18px; margin-top: 44px; }
+    .decision > section { padding: 34px; border: 2px solid var(--ink); background: var(--white); }
+    .decision > section:last-child { color: #fff; background: var(--purple); border-color: var(--purple); }
+    .decision .or { display: grid; place-items: center; font-size: 13px; font-weight: 950; letter-spacing: .12em; }
+    .decision h2 { margin: 0 0 12px; font-size: 38px; letter-spacing: -.05em; }
+    .decision p { margin: 0; font-size: 18px; line-height: 1.55; }
+    .scale { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; margin-top: 48px; border: 2px solid var(--ink); }
+    .scale section { min-height: 240px; padding: 28px; border-right: 1px solid var(--ink); }
+    .scale section:last-child { border-right: 0; }
+    .scale strong { display: block; margin-bottom: 18px; color: var(--purple); font-size: 70px; line-height: 1; letter-spacing: -.07em; }
+    .scale h2 { margin: 0 0 10px; font-size: 28px; letter-spacing: -.04em; }
+    .scale p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .pipeline { display: flex; align-items: stretch; gap: 8px; margin-top: 46px; }
+    .pipeline section { flex: 1; min-width: 0; padding: 22px 16px; background: #fff; border: 1px solid var(--line); }
+    .pipeline i { align-self: center; color: var(--purple); font-style: normal; font-weight: 950; }
+    .pipeline small { color: var(--purple); font-weight: 900; }
+    .pipeline b { display: block; margin: 10px 0 6px; font-size: 20px; }
+    .pipeline span { color: var(--muted); font-size: 14px; line-height: 1.4; }
+    .routing { display: grid; grid-template-columns: 1fr 60px 1fr; align-items: center; margin-top: 48px; }
+    .routing section { min-height: 270px; padding: 34px; border: 2px solid var(--ink); background: #fff; }
+    .routing section:last-child { background: var(--lime); }
+    .routing .arrow { text-align: center; color: var(--purple); font-size: 34px; font-weight: 900; }
+    .routing h2 { margin: 6px 0 18px; font-size: 44px; letter-spacing: -.06em; }
+    .routing ul { margin: 0; padding-left: 19px; line-height: 1.8; }
+    .asset-layout { display: grid; grid-template-columns: .72fr 1.28fr; gap: 32px; align-items: center; margin-top: 30px; }
+    .asset-layout img { display: block; width: 100%; max-height: 440px; object-fit: contain; background: #fff; border: 1px solid var(--line); }
+    .asset-layout figcaption { margin-top: 8px; color: var(--muted); font-size: 12px; }
+    .checklist { margin: 34px 0 0; padding: 0; list-style: none; counter-reset: item; }
+    .checklist li { display: grid; grid-template-columns: 46px 1fr; align-items: start; gap: 14px; padding: 15px 0; border-bottom: 1px solid var(--line); font-size: 20px; line-height: 1.45; }
+    .checklist li::before { counter-increment: item; content: counter(item, decimal-leading-zero); color: var(--purple); font-size: 13px; font-weight: 950; }
+    .rubric { width: 100%; margin-top: 34px; border-collapse: collapse; font-size: 15px; }
+    .rubric th, .rubric td { padding: 13px 14px; text-align: left; vertical-align: top; border: 1px solid var(--line); }
+    .rubric th { background: var(--ink); color: #fff; }
+    .rubric td:first-child { font-weight: 850; }
+    .timebox { display: inline-flex; margin-top: 30px; border: 2px solid currentColor; }
+    .timebox span { padding: 12px 18px; border-right: 1px solid currentColor; font-weight: 800; }
+    .timebox span:last-child { border-right: 0; }
+    .footer-link { position: absolute; left: 74px; bottom: 58px; color: inherit; font-size: 13px; font-weight: 800; }
+    .footer-link:hover { color: var(--purple); }
+    @media (max-width: 900px) {
+      :root { --rail: 0px; }
+      .toc { display: none; }
+      .deck { padding-inline: 12px; }
+      .slide { width: 100%; min-height: auto; padding: 34px 26px 70px; }
+      .grid.three, .grid.four, .grid.two, .asset-layout { grid-template-columns: 1fr; }
+      .decision, .routing { grid-template-columns: 1fr; }
+      .decision .or, .routing .arrow { padding: 4px; transform: rotate(90deg); }
+      .scale { grid-template-columns: 1fr; }
+      .scale section { min-height: 0; border-right: 0; border-bottom: 1px solid var(--ink); }
+      .pipeline { flex-direction: column; }
+      .pipeline i { transform: rotate(90deg); }
+      .note { position: static; margin-top: 24px; }
+      .footer-link { left: 26px; bottom: 28px; }
+    }
+    @media print {
+      @page { size: landscape; margin: 0; }
+      body { background: #fff; }
+      .topbar, .toc, .progress, .skip { display: none !important; }
+      .deck { margin: 0; padding: 0; }
+      .slide { width: 100vw; min-height: 100vh; margin: 0; padding: 55px 64px; page-break-after: always; border: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#deck">강의덱으로 이동</a>
+  <header class="topbar">
+    <div class="brand"><b>A2</b><span>AWAC V2 · 판단에서 운영까지</span></div>
+    <div class="tools"><span class="counter"><b id="current">01</b> / <span id="total">31</span></span><button type="button" id="print">PDF로 인쇄</button></div>
+  </header>
+  <div class="progress" id="progress"></div>
+  <nav class="toc" id="toc" aria-label="슬라이드 목차"><h2>COURSE INDEX</h2></nav>
+  <main class="deck" id="deck">
+    <article class="slide dark" data-title="AWAC V2" data-stage="OPENING">
+      <p class="eyebrow">AFTER WORK AI CLUB · VERSION 2</p>
+      <h1>AI를 쓰는 법에서,<br><span>일을 맡기는 판단</span>으로.</h1>
+      <p class="lead">1기에서 실제로 나온 질문을 4주 과정의 선택 기준·실습·검수 장치로 바꿨습니다.</p>
+      <div class="timebox"><span>4 WEEKS</span><span>1 REAL WORK</span><span>2 RUNS</span><span>1 OPERATING SYSTEM</span></div>
+      <a class="footer-link" href="./student-workbook.md">참여자 워크북 열기 ↗</a>
+    </article>
+
+    <article class="slide" data-title="실제 질문이 말한 것" data-stage="OPENING">
+      <p class="eyebrow">WHY V2</p>
+      <h1>사람들은 도구보다,<br><span>결정에서 막혔습니다.</span></h1>
+      <div class="grid two">
+        <section class="card"><small>BUILD OR NOT</small><h2>한 번 쓸 일도<br>Agent로 만드나요?</h2><p>자동화 가능 여부보다 자동화할 시점이 필요했습니다.</p></section>
+        <section class="card"><small>RUN OR STOP</small><h2>15분째 도는데<br>계속 기다리나요?</h2><p>모델·effort·컨텍스트를 구분하는 복구 기준이 필요했습니다.</p></section>
+        <section class="card"><small>CLOUD OR LOCAL</small><h2>비용과 품질을<br>어떻게 나누나요?</h2><p>계획과 실행에 같은 모델을 쓰지 않는 라우팅이 필요했습니다.</p></section>
+        <section class="card"><small>OUTPUT QUALITY</small><h2>결과가 어려운데<br>어떻게 고치나요?</h2><p>생성 이후의 사실성·가독성·형식 검수가 필요했습니다.</p></section>
+      </div>
+    </article>
+
+    <article class="slide purple" data-title="4주의 변화" data-stage="OPENING">
+      <p class="eyebrow">LEARNING JOURNEY</p>
+      <h1>매주 하나의 판단이,<br><span>다음 주의 입력</span>이 됩니다.</h1>
+      <div class="grid four">
+        <section class="card"><small>WEEK 01</small><h2>문제</h2><p>현재와 원하는 상태의 간극을 씁니다.</p></section>
+        <section class="card"><small>WEEK 02</small><h2>선택</h2><p>Agent를 만들지 않을 기준부터 정합니다.</p></section>
+        <section class="card"><small>WEEK 03</small><h2>운영</h2><p>역할·모델·비용·복구를 연결합니다.</p></section>
+        <section class="card"><small>WEEK 04</small><h2>검수</h2><p>믿고 쓸 수 있는 결과와 근거를 남깁니다.</p></section>
+      </div>
+    </article>
+
+    <article class="slide lime" data-title="수업 전 프리플라이트" data-stage="PRE-FLIGHT">
+      <p class="eyebrow">BEFORE CLASS</p>
+      <h1>강의보다 먼저,<br>환경을 통과합니다.</h1>
+      <div class="grid three">
+        <section class="card"><small>ACCESS</small><h2>열기</h2><p>노션과 실습 페이지가 열린다.</p></section>
+        <section class="card"><small>EDIT</small><h2>쓰기</h2><p>한 줄을 작성하고 저장할 수 있다.</p></section>
+        <section class="card"><small>RUN</small><h2>실행</h2><p>AI 로그인·플랜·파일 업로드가 된다.</p></section>
+      </div>
+      <p class="note">1기에서 최소 8명이 계정·초대·편집권한 문제를 보고했습니다. 프리플라이트는 행정이 아니라 학습 설계입니다.</p>
+    </article>
+
+    <article class="slide dark" data-title="1주차 오프닝" data-stage="WEEK 01">
+      <p class="eyebrow">WEEK 01 · WHY GAP</p>
+      <p class="big-number">01<small> / PROBLEM</small></p>
+      <h1>도구보다 먼저,<br><span>문제를 씁니다.</span></h1>
+      <p class="lead">잘 정리하려고 멈추지 않습니다. 친구에게 말하듯 현재 상황부터 적습니다.</p>
+    </article>
+
+    <article class="slide" data-title="문제와 해결책 분리" data-stage="WEEK 01">
+      <p class="eyebrow">OBSERVATION BEFORE SOLUTION</p>
+      <h1>“Agent가 필요해요”는<br><span>아직 문제정의가 아닙니다.</span></h1>
+      <div class="decision">
+        <section><small>해결책 문장</small><h2>멀티 Agent를 만들고 싶다</h2><p>도구와 구조가 이미 답으로 들어가 있습니다.</p></section>
+        <div class="or">→</div>
+        <section><small>문제 문장</small><h2>매주 3시간씩 같은 자료를 다시 정리한다</h2><p>누가, 언제, 어떤 비용을 겪는지 확인할 수 있습니다.</p></section>
+      </div>
+    </article>
+
+    <article class="slide" data-title="4칸 문제정의" data-stage="WEEK 01">
+      <p class="eyebrow">PROBLEM CARD</p>
+      <h1>네 칸이면,<br><span>시작할 수 있습니다.</span></h1>
+      <div class="grid four">
+        <section class="card"><small>01 CURRENT</small><h2>현재</h2><p>지금 누가 어떻게 처리하는가?</p></section>
+        <section class="card"><small>02 REPEAT</small><h2>반복</h2><p>얼마나 자주, 얼마나 오래 걸리는가?</p></section>
+        <section class="card"><small>03 CHANGE</small><h2>변화</h2><p>무엇이 달라지면 성공인가?</p></section>
+        <section class="card"><small>04 LIMIT</small><h2>제약</h2><p>민감정보·승인·예산·마감은?</p></section>
+      </div>
+    </article>
+
+    <article class="slide purple" data-title="HMW 질문" data-stage="WEEK 01">
+      <p class="eyebrow">HOW MIGHT WE</p>
+      <h1>정답을 닫지 않고,<br><span>탐색 범위를 정합니다.</span></h1>
+      <p class="quote">어떻게 하면 [사용자]가 [상황]에서 [원하는 결과]를 얻도록 도울 수 있을까?</p>
+      <p class="note">AI를 쓰지 않는 대안도 반드시 한 개 적습니다. 비교가 있어야 Agent 선택이 판단이 됩니다.</p>
+    </article>
+
+    <article class="slide" data-title="근거가 먼저" data-stage="WEEK 01">
+      <p class="eyebrow">EVIDENCE, NOT POLISH</p>
+      <h1>잘 쓴 문장보다,<br><span>확인된 숫자 하나.</span></h1>
+      <div class="grid three">
+        <section class="card"><small>FREQUENCY</small><h2>빈도</h2><p>최근 4주 동안 몇 번 발생했는가?</p></section>
+        <section class="card"><small>TIME</small><h2>시간</h2><p>한 번 처리하는 데 몇 분이 걸리는가?</p></section>
+        <section class="card"><small>FRICTION</small><h2>실패</h2><p>오류·대기·재작업은 어디서 생기는가?</p></section>
+      </div>
+      <p class="quote">미확인은 실패가 아니라, 다음에 확인할 항목입니다.</p>
+    </article>
+
+    <article class="slide orange" data-title="1주차 과제" data-stage="WEEK 01">
+      <p class="eyebrow">WEEK 01 OUTPUT</p>
+      <h1>과제는 완성된 기획서가 아니라,<br><span>검증할 문제 카드</span>입니다.</h1>
+      <ul class="checklist"><li>문제정의 4칸 작성</li><li>최근 4주의 반복 횟수와 시간 측정</li><li>AI 없이 할 대안 한 개</li><li>가장 먼저 확인할 미확인 한 개</li></ul>
+    </article>
+
+    <article class="slide dark" data-title="2주차 오프닝" data-stage="WEEK 02">
+      <p class="eyebrow">WEEK 02 · INTELLIGENCE FIT</p>
+      <p class="big-number">02<small> / DECISION</small></p>
+      <h1>만들 수 있는가보다,<br><span>만들어야 하는가.</span></h1>
+      <p class="lead">Agent 제작은 목표가 아닙니다. 재사용 가치가 구축비용보다 클 때만 선택합니다.</p>
+    </article>
+
+    <article class="slide lime" data-title="1·2·5회 기준" data-stage="WEEK 02">
+      <p class="eyebrow">BUILD-OR-NOT</p>
+      <h1>반복 횟수로<br>첫 선택을 단순하게.</h1>
+      <div class="scale">
+        <section><strong>1×</strong><h2>대화형 AI</h2><p>빠르게 만들고 사람이 직접 마무리합니다.</p></section>
+        <section><strong>2–4×</strong><h2>프롬프트·템플릿</h2><p>입력과 출력 형식이 반복되는지 관찰합니다.</p></section>
+        <section><strong>5×+</strong><h2>Agent 후보</h2><p>역할·절차·검수·중단 조건을 구조화합니다.</p></section>
+      </div>
+      <p class="note">판단이 매번 크게 달라지거나 실패 비용이 높다면 반복 횟수가 많아도 사람 중심으로 유지합니다.</p>
+    </article>
+
+    <article class="slide" data-title="Build-or-not 매트릭스" data-stage="WEEK 02">
+      <p class="eyebrow">DECISION MATRIX</p>
+      <h1>반복성과 판단 복잡도를<br><span>함께 봅니다.</span></h1>
+      <div class="grid two">
+        <section class="card"><small>낮은 반복 × 낮은 판단</small><h2>그냥 처리</h2><p>대화형 AI와 사람 마무리</p></section>
+        <section class="card"><small>높은 반복 × 낮은 판단</small><h2>자동화 우선</h2><p>템플릿 또는 단일 Agent</p></section>
+        <section class="card"><small>낮은 반복 × 높은 판단</small><h2>사람 중심</h2><p>AI는 초안·탐색만 지원</p></section>
+        <section class="card"><small>높은 반복 × 높은 판단</small><h2>승인 포함 Agent</h2><p>검수·예외·중단 조건부터 설계</p></section>
+      </div>
+    </article>
+
+    <article class="slide purple" data-title="Agent 명세 6칸" data-stage="WEEK 02">
+      <p class="eyebrow">AGENT SPEC</p>
+      <h1>좋은 프롬프트보다,<br><span>빈칸 없는 명세.</span></h1>
+      <div class="grid three">
+        <section class="card"><small>01</small><h2>역할</h2><p>누구의 어떤 일을 돕는가?</p></section>
+        <section class="card"><small>02</small><h2>목표</h2><p>성공 상태는 무엇인가?</p></section>
+        <section class="card"><small>03</small><h2>입력</h2><p>필수 자료와 누락 대응은?</p></section>
+        <section class="card"><small>04</small><h2>절차</h2><p>작업 순서와 분기는?</p></section>
+        <section class="card"><small>05</small><h2>출력</h2><p>형식과 저장 위치는?</p></section>
+        <section class="card"><small>06</small><h2>검수</h2><p>승인·재시도·중단은?</p></section>
+      </div>
+    </article>
+
+    <article class="slide" data-title="커리어 결과물 사례" data-stage="WEEK 02">
+      <p class="eyebrow">REAL JOB OUTCOME</p>
+      <h1>포트폴리오 하나라면,<br><span>Agent보다 결과가 먼저.</span></h1>
+      <div class="decision">
+        <section><small>이번 주 제출</small><h2>대화형 AI + Artifact</h2><p>경력기술서 → 구조 → 수정 가능한 포트폴리오 초안</p></section>
+        <div class="or">→</div>
+        <section><small>매달 여러 명 제작</small><h2>재사용 Agent</h2><p>입력 양식 → 레퍼런스 → 초안 → 검수 → 버전 기록</p></section>
+      </div>
+    </article>
+
+    <article class="slide orange" data-title="2주차 과제" data-stage="WEEK 02">
+      <p class="eyebrow">WEEK 02 OUTPUT</p>
+      <h1>한 번 만들지 말고,<br><span>두 번 비교합니다.</span></h1>
+      <ul class="checklist"><li>Build-or-not 선택과 이유</li><li>Agent 명세 6칸</li><li>첫 번째 입력 실행 기록</li><li>다른 입력으로 두 번째 실행</li><li>달라진 결과와 수정 이유</li></ul>
+    </article>
+
+    <article class="slide dark" data-title="3주차 오프닝" data-stage="WEEK 03">
+      <p class="eyebrow">WEEK 03 · OPERATING SYSTEM</p>
+      <p class="big-number">03<small> / OPERATE</small></p>
+      <h1>Agent 수가 아니라,<br><span>운영 가능한 흐름.</span></h1>
+      <p class="lead">역할을 늘리기 전에 단일 Agent에서 실제로 생긴 문제를 확인합니다.</p>
+    </article>
+
+    <article class="slide" data-title="멀티 Agent가 필요한 때" data-stage="WEEK 03">
+      <p class="eyebrow">WHEN TO SPLIT</p>
+      <h1>다른 기준으로 판단할 때만,<br><span>역할을 나눕니다.</span></h1>
+      <div class="grid three">
+        <section class="card"><small>CONTEXT</small><h2>자료가 다르다</h2><p>역할마다 읽어야 할 원천이 다릅니다.</p></section>
+        <section class="card"><small>CRITERIA</small><h2>판단이 다르다</h2><p>계획·작성·평가의 통과 기준이 다릅니다.</p></section>
+        <section class="card"><small>CONTROL</small><h2>승인이 다르다</h2><p>실행 권한과 사람 승인 지점이 다릅니다.</p></section>
+      </div>
+      <p class="quote">같은 기준을 쓰는 Agent를 이름만 나누지 않습니다.</p>
+    </article>
+
+    <article class="slide" data-title="멀티 Agent 4층 구조" data-stage="WEEK 03">
+      <p class="eyebrow">FOUR LAYERS</p>
+      <h1>역할보다 먼저,<br><span>층을 분리합니다.</span></h1>
+      <div class="asset-layout">
+        <div><div class="grid two"><section class="card"><small>01</small><h2>설정</h2><p>역할·권한·자료</p></section><section class="card"><small>02</small><h2>실행</h2><p>순서·전달·분기</p></section><section class="card"><small>03</small><h2>출력</h2><p>중간·최종 산출물</p></section><section class="card"><small>04</small><h2>로그</h2><p>실패·수정·다음 기준</p></section></div></div>
+        <figure><img src="../assets/educational/multi-agent-layers.png" alt="멀티 에이전트의 설정, 실행, 출력, 로그 계층"><figcaption>1기 대화에서 공유된 멀티 Agent 구조 자료</figcaption></figure>
+      </div>
+    </article>
+
+    <article class="slide purple" data-title="모델과 effort" data-stage="WEEK 03">
+      <p class="eyebrow">MODEL ≠ EFFORT</p>
+      <h1><span>모델</span>은 풀 수 있는 난이도,<br><span>effort</span>는 생각할 시간.</h1>
+      <div class="grid two">
+        <section class="card"><small>QUALITY LOW</small><h2>effort부터</h2><p>같은 모델이 더 오래 검토하면 좋아질 문제인지 봅니다.</p></section>
+        <section class="card"><small>CAPABILITY LOW</small><h2>모델을 다음에</h2><p>과제 자체가 모델 역량을 넘을 때 올립니다.</p></section>
+      </div>
+      <p class="note">무조건 가장 비싼 모델을 쓰는 대신, 실패 원인을 먼저 분류합니다.</p>
+    </article>
+
+    <article class="slide lime" data-title="뇌와 손 라우팅" data-stage="WEEK 03">
+      <p class="eyebrow">MODEL ROUTING</p>
+      <h1>뇌는 고성능,<br>손은 저비용.</h1>
+      <div class="routing">
+        <section><small>BRAIN</small><h2>계획·평가</h2><ul><li>모호한 목표 구조화</li><li>예외 판단</li><li>품질 기준 대조</li></ul></section>
+        <div class="arrow">→</div>
+        <section><small>HANDS</small><h2>반복 실행</h2><ul><li>형식 변환</li><li>파일 정리</li><li>정해진 절차 수행</li></ul></section>
+      </div>
+      <p class="note">로컬 LLM 여부는 하드웨어 구매보다 먼저 작업 분리와 실제 사용량으로 판단합니다.</p>
+    </article>
+
+    <article class="slide dark" data-title="7분 복구 규칙" data-stage="WEEK 03">
+      <p class="eyebrow">SEVEN-MINUTE RECOVERY</p>
+      <h1>기다림에도,<br><span>중단 기준</span>이 필요합니다.</h1>
+      <div class="pipeline">
+        <section><small>01</small><b>중단</b><span>7분 이상 진전이 없으면 멈춤</span></section><i>→</i>
+        <section><small>02</small><b>재실행</b><span>같은 요청을 한 번 다시</span></section><i>→</i>
+        <section><small>03</small><b>분할</b><span>계획·수집·작성·검수</span></section><i>→</i>
+        <section><small>04</small><b>정리</b><span>컨텍스트와 불필요 자료</span></section><i>→</i>
+        <section><small>05</small><b>조정</b><span>effort 후 모델 변경</span></section><i>→</i>
+        <section><small>06</small><b>질문</b><span>미완료 상태로 사람 호출</span></section>
+      </div>
+    </article>
+
+    <article class="slide" data-title="비용 측정" data-stage="WEEK 03">
+      <p class="eyebrow">COST IS AN OUTCOME</p>
+      <h1>토큰보다 먼저,<br><span>완료된 일의 비용</span>을 봅니다.</h1>
+      <div class="grid three">
+        <section class="card"><small>TIME</small><h2>완료시간</h2><p>사람의 대기·수정까지 포함</p></section>
+        <section class="card"><small>QUALITY</small><h2>통과율</h2><p>첫 결과가 기준을 통과한 비율</p></section>
+        <section class="card"><small>REUSE</small><h2>재사용</h2><p>구축비용을 나눌 실제 실행 횟수</p></section>
+      </div>
+      <p class="quote">저렴한 모델이 세 번 실패하면, 더 싼 선택이 아닐 수 있습니다.</p>
+    </article>
+
+    <article class="slide orange" data-title="3주차 과제" data-stage="WEEK 03">
+      <p class="eyebrow">WEEK 03 OUTPUT</p>
+      <h1>멀티 Agent보다,<br><span>복구 가능한 운영도</span>를 냅니다.</h1>
+      <ul class="checklist"><li>역할을 나눈 실제 이유</li><li>계획·실행·평가 모델 라우팅</li><li>7분 복구 로그</li><li>사람 승인과 최대 재시도</li><li>완료시간·통과율·재사용 측정</li></ul>
+    </article>
+
+    <article class="slide dark" data-title="4주차 오프닝" data-stage="WEEK 04">
+      <p class="eyebrow">WEEK 04 · QUALITY GATES</p>
+      <p class="big-number">04<small> / VERIFY</small></p>
+      <h1>생성보다 중요한,<br><span>믿고 쓰는 기준.</span></h1>
+      <p class="lead">결과가 나왔다는 사실과, 결과를 사용할 수 있다는 판단을 분리합니다.</p>
+    </article>
+
+    <article class="slide" data-title="팩트체크 게이트" data-stage="WEEK 04">
+      <p class="eyebrow">PASS · REVIEW · HOLD</p>
+      <h1>사실성은 느낌이 아니라,<br><span>분기입니다.</span></h1>
+      <div class="asset-layout">
+        <div><ul class="checklist"><li>최신성이 중요한 주장인가?</li><li>신뢰 가능한 원출처가 있는가?</li><li>사실과 추론을 구분했는가?</li><li>충돌하면 HOLD로 멈추는가?</li></ul></div>
+        <figure><img src="../assets/educational/fact-check-decision-flow.png" alt="사실검증 결과를 PASS, REVIEW, HOLD로 나누는 흐름"><figcaption>사실검증 의사결정 흐름</figcaption></figure>
+      </div>
+    </article>
+
+    <article class="slide" data-title="읽기 쉬운 출력" data-stage="WEEK 04">
+      <p class="eyebrow">ASD-STE100 PRINCIPLES</p>
+      <h1>정확한 결과도,<br><span>이해되지 않으면 실패</span>입니다.</h1>
+      <div class="asset-layout">
+        <div><ul class="checklist"><li>한 문장에 한 의미</li><li>짧고 직접적인 문장</li><li>같은 대상은 같은 용어</li><li>행동 주체와 다음 행동 명시</li></ul></div>
+        <figure><img src="../assets/educational/asd-ste100-overview.png" alt="ASD-STE100 기반 읽기 쉬운 기술 문서 원칙"><figcaption>읽기 쉬운 기술문서 원칙</figcaption></figure>
+      </div>
+    </article>
+
+    <article class="slide purple" data-title="출력 형식 선택" data-stage="WEEK 04">
+      <p class="eyebrow">FORMAT IS PART OF THE ANSWER</p>
+      <h1>글이 정답이 아니라,<br><span>사용 상황에 맞는 형식</span>이 정답입니다.</h1>
+      <div class="asset-layout">
+        <div class="grid two"><section class="card"><small>READ</small><h2>글</h2><p>논리와 근거</p></section><section class="card"><small>SCAN</small><h2>표·도식</h2><p>비교와 흐름</p></section><section class="card"><small>USE</small><h2>웹</h2><p>탐색과 입력</p></section><section class="card"><small>LEARN</small><h2>영상</h2><p>시연과 설명</p></section></div>
+        <figure><img src="../assets/educational/output-format-guide.png" alt="글, 다이어그램, 웹페이지, 영상 등 출력 형식 선택 가이드"><figcaption>출력 형식 선택 가이드</figcaption></figure>
+      </div>
+    </article>
+
+    <article class="slide" data-title="최종 발표 루브릭" data-stage="WEEK 04">
+      <p class="eyebrow">SIX-MINUTE DEMO</p>
+      <h1>기능을 자랑하지 말고,<br><span>판단 근거를 보여줍니다.</span></h1>
+      <table class="rubric">
+        <thead><tr><th>시간</th><th>발표 내용</th><th>보여줄 증거</th></tr></thead>
+        <tbody>
+          <tr><td>0:00–0:45</td><td>실제 문제와 근거</td><td>빈도·시간·오류</td></tr>
+          <tr><td>0:45–1:30</td><td>Agent 선택 판단</td><td>대안 비교·5회 기준</td></tr>
+          <tr><td>1:30–3:00</td><td>역할·입력·흐름·모델</td><td>운영도</td></tr>
+          <tr><td>3:00–4:30</td><td>두 번의 실행</td><td>성공·실패·수정 로그</td></tr>
+          <tr><td>4:30–5:30</td><td>품질 검수</td><td>사실·가독성·형식·승인</td></tr>
+          <tr><td>5:30–6:00</td><td>다음 30일</td><td>재사용 조건과 측정</td></tr>
+        </tbody>
+      </table>
+    </article>
+
+    <article class="slide lime" data-title="30일 재사용 실험" data-stage="CLOSING">
+      <p class="eyebrow">AFTER THE COURSE</p>
+      <h1>수료가 아니라,<br>30일의 재사용으로.</h1>
+      <div class="grid three">
+        <section class="card"><small>DAY 07</small><h2>다시 실행</h2><p>같은 업무에 실제로 한 번 더 사용</p></section>
+        <section class="card"><small>DAY 14</small><h2>측정</h2><p>시간·오류·대기 변화를 기록</p></section>
+        <section class="card"><small>DAY 30</small><h2>결정</h2><p>계속 사용·수정·중단 중 하나 선택</p></section>
+      </div>
+      <p class="quote">실패를 숨기지 않고, 다음 기준으로 바꿉니다.</p>
+    </article>
+
+    <article class="slide dark" data-title="클로징" data-stage="CLOSING">
+      <p class="eyebrow">FROM TOOL USER TO WORK DESIGNER</p>
+      <h1>Agent를 만든다는 건,<br><span>반복하던 판단을<br>운영 가능한 기준으로 남기는 일.</span></h1>
+      <p class="lead">문제 → 선택 → 운영 → 검수. 이제 새로운 도구가 나와도 같은 기준으로 판단할 수 있습니다.</p>
+      <a class="footer-link" href="./student-workbook.md">워크북으로 실행 시작하기 ↗</a>
+    </article>
+  </main>
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll('.slide')];
+      const toc = document.getElementById('toc');
+      const total = document.getElementById('total');
+      const current = document.getElementById('current');
+      const progress = document.getElementById('progress');
+      let active = 0;
+      total.textContent = String(slides.length).padStart(2, '0');
+      slides.forEach((slide, index) => {
+        slide.dataset.number = String(index + 1).padStart(2, '0');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.innerHTML = `<span>${slide.dataset.number}</span><span>${slide.dataset.title}</span>`;
+        button.addEventListener('click', () => slide.scrollIntoView({behavior:'smooth', block:'start'}));
+        toc.appendChild(button);
+      });
+      const buttons = [...toc.querySelectorAll('button')];
+      const sync = index => {
+        active = index;
+        current.textContent = String(index + 1).padStart(2, '0');
+        progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+        buttons.forEach((button, i) => button.classList.toggle('active', i === index));
+      };
+      const observer = new IntersectionObserver(entries => {
+        const visible = entries.filter(entry => entry.isIntersecting).sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) sync(slides.indexOf(visible.target));
+      }, {threshold:[.35,.6]});
+      slides.forEach(slide => observer.observe(slide));
+      document.addEventListener('keydown', event => {
+        if (['ArrowRight','PageDown',' '].includes(event.key)) { event.preventDefault(); slides[Math.min(active + 1, slides.length - 1)].scrollIntoView({behavior:'smooth'}); }
+        if (['ArrowLeft','PageUp'].includes(event.key)) { event.preventDefault(); slides[Math.max(active - 1, 0)].scrollIntoView({behavior:'smooth'}); }
+        if (event.key === 'Home') { event.preventDefault(); slides[0].scrollIntoView({behavior:'smooth'}); }
+        if (event.key === 'End') { event.preventDefault(); slides.at(-1).scrollIntoView({behavior:'smooth'}); }
+      });
+      document.getElementById('print').addEventListener('click', () => window.print());
+      sync(0);
+    })();
+  </script>
+</body>
+</html>
